@@ -39,7 +39,7 @@ class _AlertNearLinksState extends State<AlertNearLinks> {
           width: double.infinity,
           padding: EdgeInsets.only(top: 9, bottom: 10),
           alignment: Alignment.center,
-          decoration: new BoxDecoration(
+          decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(19),
             color: Color(0xfff63dca),
             boxShadow: [BoxShadow(
@@ -49,7 +49,7 @@ class _AlertNearLinksState extends State<AlertNearLinks> {
                 spreadRadius: 0
             ) ],
           ),
-          child: Text(english_txt_enable?"Other device":"En otro equipo",
+          child: Text(is_english_txt_enable?"Other device":"En otro equipo",
             style: TextStyle(
               fontFamily: 'Roboto',
               color: Color(0xffffffff),
@@ -70,7 +70,7 @@ class _AlertNearLinksState extends State<AlertNearLinks> {
         verticalSpace(30),
         Image.asset('assets/icon/icon_key.png'),
         verticalSpace(26),
-        Text(english_txt_enable?"Where do you use your wallet?\n":"¿Dónde tienes tu wallet?\n",
+        Text(is_english_txt_enable?"Where do you use your wallet?\n":"¿Dónde tienes tu wallet?\n",
           style: TextStyle(
             fontFamily: 'Roboto',
             color: Color(0xff536fe0),
@@ -92,7 +92,7 @@ class _AlertNearLinksState extends State<AlertNearLinks> {
               width: double.infinity,
               padding: EdgeInsets.only(top: 9, bottom: 10),
               alignment: Alignment.center,
-              decoration: new BoxDecoration(
+              decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(19),
                 color: Color(0xff5A78C9),
                 boxShadow: [BoxShadow(
@@ -102,7 +102,7 @@ class _AlertNearLinksState extends State<AlertNearLinks> {
                     spreadRadius: 0
                 ) ],
               ),
-              child: Text(english_txt_enable?"This phone":"En mi celular",
+              child: Text(is_english_txt_enable?"This phone":"En mi celular",
                 style: TextStyle(
                   fontFamily: 'Roboto',
                   color: Color(0xffffffff),
@@ -125,7 +125,7 @@ class _AlertNearLinksState extends State<AlertNearLinks> {
       margin: EdgeInsets.symmetric(horizontal: getPadding(12)).copyWith(bottom: 0),
       padding: EdgeInsets.symmetric(horizontal: getPadding(12)),
       // white box that covers everything
-      decoration: new BoxDecoration(
+      decoration: BoxDecoration(
         color: Color(0xffffffff),
         borderRadius: BorderRadius.circular(getPadding(15)),
         boxShadow: [

@@ -114,7 +114,9 @@ class _RechargeAmountCardState extends State<RechargeAmountCard> {
             Image.asset('assets/images/pd_golden_recharge.png'),
             verticalSpace(23.2),
             Text(
-              english_txt_enable?"Choose how much\nyou’d like to top up":"Elige el monto\nque quieres recargar",
+              is_english_txt_enable
+                  ? "Choose how much\nyou’d like to top up"
+                  : "Elige el monto\nque quieres recargar",
               style: TextStyle(
                 fontFamily: 'Roboto',
                 color: Color(0xff000000),
@@ -128,7 +130,8 @@ class _RechargeAmountCardState extends State<RechargeAmountCard> {
             buildRechargeAmount("30 soles", 30, args),
             buildRechargeAmount("20 soles", 20, args),
             buildRechargeAmount("10 soles", 10, args),
-            buildRechargeAmount(english_txt_enable?"Other amount":"Otro monto", null, args),
+            buildRechargeAmount(
+                is_english_txt_enable ? "Other amount" : "Otro monto", null, args),
             verticalSpace(108),
           ],
         ),
@@ -143,9 +146,7 @@ class _RechargeAmountCardState extends State<RechargeAmountCard> {
     );
 
     return PageScaffold(
-      boxDecoration: BoxDecoration(
-        color: Colors.white
-      ),
+      boxDecoration: BoxDecoration(color: Colors.white),
       body: SizedBox.expand(
         child: SingleChildScrollView(
           scrollDirection: Axis.vertical,
@@ -189,34 +190,32 @@ class _RechargeAmountCardState extends State<RechargeAmountCard> {
     );
   }
 
-  Widget buildRechargeAmount(String amount, int? amountInSoles, CardTopUpFlowArgs args) {
-
-
-    double? celoDollars = convertSolesToRechargeTypeCurrency(args.rechargeType, amountInSoles);
+  Widget buildRechargeAmount(
+      String amount, int? amountInSoles, CardTopUpFlowArgs args) {
+    double? cryptoEquivalent =
+        convertSolesToRechargeTypeCurrency(args.rechargeType, amountInSoles);
 
     return Padding(
       padding: EdgeInsets.fromLTRB(19, 0, 19, 21),
       child: GestureDetectorTr(
         analyticsName: "btn_rechargeAmount_" + amount.substring(0, 2),
         onTap: () async {
-
           if (amountInSoles == null) {
-            Navigator.of(context).pushNamed(RechargeOtherAmountCard.routeName, arguments: args);
+            Navigator.of(context)
+                .pushNamed(RechargeOtherAmountCard.routeName, arguments: args);
           } else {
             args.penCents = amountInSoles * 100;
 
-            if (args.rechargeType==RechargeType.AURORA) {
-
-              startValoraFlow(celoDollars??0, args, context);
-
-            } else if (args.rechargeType==RechargeType.NEAR) {
-
+            if (args.rechargeType == RechargeType.AURORA ||
+                args.rechargeType == RechargeType.POLYGON) {
+              startWebViewFlow(cryptoEquivalent ?? 0, args, context);
+            } else if (args.rechargeType == RechargeType.NEAR) {
               final nearArgs = AlertNearLinksArgs()
-                ..amount = celoDollars??0
+                ..amount = cryptoEquivalent ?? 0
                 ..penCents = args.penCents;
 
-              Navigator.of(context).pushNamed(AlertNearLinks.routeName,
-                  arguments: nearArgs);
+              Navigator.of(context)
+                  .pushNamed(AlertNearLinks.routeName, arguments: nearArgs);
             } else {
               visanetFlowWrapper(args);
             }
@@ -242,7 +241,10 @@ class _RechargeAmountCardState extends State<RechargeAmountCard> {
             ],
           ),
           child: Text(
-            amount.toString()+ (getStringFormattedForRechargeBtns(args.rechargeType, celoDollars, amountInSoles)??""),
+            amount.toString() +
+                (getStringFormattedForRechargeBtns(
+                        args.rechargeType, cryptoEquivalent, amountInSoles) ??
+                    ""),
             style: TextStyle(
               fontFamily: 'Roboto',
               color: Color(0xffffffff),
@@ -286,21 +288,30 @@ class _RechargeAmountCardState extends State<RechargeAmountCard> {
       isLoading = false;
     });
   }
-}
 
 
-Future<void> startValoraFlow(double celoDollars, CardTopUpFlowArgs args, BuildContext context) async {
-
+Future<void> startWebViewFlow(double cryptoEquivalent, CardTopUpFlowArgs args,
+    BuildContext context) async {
   //TODO CELO
   /*final bool result = await platform.invokeMethod('startWebViewRechargeCelo', <String, dynamic>{
     'amount' : celoDollars.toStringAsFixed(2),
   }) as bool;*/
 
-  final bool result = await platform.invokeMethod('startWebViewRechargeAurora', <String, dynamic>{
-    'amount' : celoDollars.toStringAsFixed(6),
-  }) as bool;
+  bool result = false;
 
-  print ("WebView callBack: " + result.toString());
+  if (args.rechargeType == RechargeType.AURORA) {
+    result = await platform
+        .invokeMethod('startWebViewRechargeAurora', <String, dynamic>{
+      'amount': cryptoEquivalent.toStringAsFixed(6),
+    }) as bool;
+  } else if (args.rechargeType == RechargeType.POLYGON) {
+    result = await platform
+        .invokeMethod('startWebViewRechargePolygon', <String, dynamic>{
+      'amount': cryptoEquivalent.toStringAsFixed(6),
+    }) as bool;
+  }
+
+  print("WebView callBack: " + result.toString());
 
   if (result) {
     //print("launching google");
@@ -310,13 +321,13 @@ Future<void> startValoraFlow(double celoDollars, CardTopUpFlowArgs args, BuildCo
       //name: 'valora_recharge_success', //TODO CELO
       name: 'aurora_recharge_success',
       parameters: <String, dynamic>{
-        'amount_cusd': celoDollars.toStringAsFixed(2),
+        'amount_cusd': cryptoEquivalent.toStringAsFixed(2),
         'amount_pen_cents': args.penCents
       },
     );
 
     final FirebaseAuth _auth = FirebaseAuth.instance;
-    final user =  _auth.currentUser;
+    final user = _auth.currentUser;
     if (user == null) {
       toast("El usuario debe hacer login");
       return;

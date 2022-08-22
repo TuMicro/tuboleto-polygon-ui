@@ -48,7 +48,7 @@ class _RechargeOtherAmountCardState extends State<RechargeOtherAmountCard> {
   late int _minAmountCents;
 
   double cDollar = 0;
-  String cDollarText = "";
+  String cryptoEquivalentText = "";
 
   @override
   void dispose() {
@@ -84,24 +84,24 @@ class _RechargeOtherAmountCardState extends State<RechargeOtherAmountCard> {
 
       if (controllerMonto.text == "") {
         cDollar = 0;
-        cDollarText = "";
+        cryptoEquivalentText = "";
       } else {
         int? monto = int.tryParse(controllerMonto.text);
 
         if (monto == null) {
           cDollar = 0;
-          cDollarText = "ERROR";
+          cryptoEquivalentText = "ERROR";
         } else {
 
           cDollar = convertSolesToRechargeTypeCurrency(_args.rechargeType,monto)??0;
 
-          cDollarText = cDollar.toString()+" "+(getCurrencySymbol(_args.rechargeType)??"");
+          cryptoEquivalentText = cDollar.toString()+" "+(getCurrencySymbol(_args.rechargeType)??"");
 
         };
       }
 
       setState(() {
-        cDollarText = cDollarText;
+        cryptoEquivalentText = cryptoEquivalentText;
       });
     });
 
@@ -175,7 +175,7 @@ class _RechargeOtherAmountCardState extends State<RechargeOtherAmountCard> {
             Image.asset('assets/images/pd_golden_recharge.png'),
             verticalSpace(27.2),
             Text(
-              english_txt_enable?"Write down the amount":"Pon el monto",
+              is_english_txt_enable?"Write down the amount":"Pon el monto",
               style: TextStyle(
                 fontFamily: 'Roboto',
                 color: Color(0xff000000),
@@ -187,7 +187,7 @@ class _RechargeOtherAmountCardState extends State<RechargeOtherAmountCard> {
             ),
             verticalSpace(29),
             Text(
-              english_txt_enable?"Write it down in soles\nand we’ll show it in " +
+              is_english_txt_enable?"Write it down in soles\nand we’ll show it in " +
                 (getCurrencySymbol(args.rechargeType) ?? "units") +
                 ".\nMinimum 1 PEN.":("Pon cuanto quieres\nrecargar, recuerda que el mínimo\nes " +
                   TextUtils.formatPrice(_minAmountCents, false)),
@@ -218,18 +218,18 @@ class _RechargeOtherAmountCardState extends State<RechargeOtherAmountCard> {
               keyboardType: TextInputType.numberWithOptions(
                   signed: false, decimal: false),
               inputFormatters: [
-                BlacklistingTextInputFormatter(RegExp("[.]"))
+                FilteringTextInputFormatter.deny(RegExp("[.]"))
               ], // to prevent dot from being typed
               decoration: InputDecoration.collapsed(
-                hintText: english_txt_enable?"Amount in PENs":"Monto en Soles",//PEN
+                hintText: is_english_txt_enable?"Amount in PENs":"Monto en Soles",//PEN
               ),
             ),
             textUnderline(),
             verticalSpace(15),
             if (args.rechargeType == RechargeType.NEAR ||
-                args.rechargeType == RechargeType.AURORA) //TODO CELO
+                args.rechargeType == RechargeType.AURORA || args.rechargeType == RechargeType.POLYGON) 
               Text(
-                cDollarText,
+                cryptoEquivalentText,
                 style: TextStyle(
                   fontFamily: 'Roboto',
                   color: Color(0xff536fe0),
@@ -257,8 +257,8 @@ class _RechargeOtherAmountCardState extends State<RechargeOtherAmountCard> {
 
                   args.penCents = amountInCents;
 
-                  if (args.rechargeType == RechargeType.AURORA) {
-                    startValoraFlow(cDollar, args, context);
+                  if (args.rechargeType == RechargeType.AURORA || args.rechargeType == RechargeType.POLYGON) {
+                    startWebViewFlow(cDollar, args, context);
                   } else if (args.rechargeType == RechargeType.NEAR) {
                     final nearArgs = AlertNearLinksArgs()
                       ..amount = cDollar
@@ -286,7 +286,7 @@ class _RechargeOtherAmountCardState extends State<RechargeOtherAmountCard> {
                     ],
                   ),
                   child: Text(
-                    english_txt_enable?"Next":"Siguiente",
+                    is_english_txt_enable?"Next":"Siguiente",
                     style: TextStyle(
                       fontFamily: 'Roboto',
                       color: Color(0xffffffff),
