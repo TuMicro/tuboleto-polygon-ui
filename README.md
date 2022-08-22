@@ -72,3 +72,16 @@ An example of how to construct an Cupertino-style search bar. The
 Flutter team [is working on an official widget](https://github.com/flutter/flutter/issues/9784)
 for this. Once that effort is complete, developers will not need to roll
 their own search bars, so to speak.
+
+
+# Utils
+En Google Cloud SDK Shell
+```
+gcloud auth application-default login
+```
+
+Showing the commits tree:
+```
+git log --oneline --graph --decorate --all
+```
+
