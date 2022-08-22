@@ -1,14 +1,12 @@
 # Overview
 
-This repo contains the UX/UI and logic modifications relating the NEAR and Aurora Network top-up compatibility built during the NEAR MetaBUILD Hackathon. 
+This repo contains the UX/UI and logic modifications relating the Polygon (MATIC) top-up compatibility and BUS token rewards built during the Polygon BUIDL IT Hackathon. 
 
 This was built using the flutter framework.
 
-The codebase here interacts with the NEAR and Aurora connectors:
+The codebase here interacts with the Polygon connector:
 
-* https://github.com/TuMicro/tuboleto-aurora-connection
-* https://github.com/TuMicro/tuboleto-near-connection
-
+* https://github.com/TuMicro/tuboleto-polygon-connection
 
 # Development
 
@@ -74,7 +72,7 @@ for this. Once that effort is complete, developers will not need to roll
 their own search bars, so to speak.
 
 
-# Utils
+## Utils
 En Google Cloud SDK Shell
 ```
 gcloud auth application-default login
